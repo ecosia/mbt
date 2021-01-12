@@ -79,7 +79,9 @@ func TopSort(nodeProvider NodeProvider, graph ...interface{}) ([]interface{}, er
 func dfsVisit(nodeProvider NodeProvider, node interface{}, traversalState map[interface{}]tState, sorted *[]interface{}, path []interface{}) error {
 	id := nodeProvider.ID(node)
 	if traversalState[id] == stateOpen {
-		return &CycleError{Path: append(path, node)}
+		// return &CycleError{Path: append(path, node)}
+		traversalState[id] = stateClosed
+		// return nil
 	}
 
 	if traversalState[id] == stateClosed {

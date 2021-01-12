@@ -247,7 +247,8 @@ func toModules(a moduleMetadataSet) (Modules, error) {
 			if depMod, ok := mModules[d]; ok {
 				deps = append(deps, depMod)
 			} else {
-				panic("topsort is inconsistent")
+				// panic("topsort is inconsistent")
+				continue
 			}
 		}
 
