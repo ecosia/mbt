@@ -17,7 +17,7 @@ lint() {
 }
 
 DIR=$(pwd)
-LIBGIT2_PATH=$DIR/libgit2
+LIBGIT2_PATH="$DIR/pkgdir/github.com/libgit2/git2go/vendor/libgit2"
 OS=$(uname -s | awk '{print tolower($0)}')
 ARCH=$(uname -m)
 
@@ -66,7 +66,7 @@ if [ ! -z $COVERALLS_TOKEN ] && [ -f ./coverage.out ]; then
   $HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci -repotoken $COVERALLS_TOKEN
 fi
 
-go build -o "build/${OUT}"
+go build -pkgdir ./pkgdir -o "build/${OUT}"
 shasum -a 1 -p "build/${OUT}" | cut -d ' ' -f 1 > "build/${OUT}.sha1"
 
 # Run go vet (this should happen after the build)

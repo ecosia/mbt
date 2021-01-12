@@ -2,7 +2,7 @@ default: install
 
 .PHONY: install
 install: build_libgit2
-	go install ./...
+	PKG_CONFIG_PATH=${PWD}/pkgdir/github.com/libgit2/git2go/vendor/libgit2/build go install -pkgdir ./pkgdir ./...
 
 .PHONY: build_libgit2
 build_libgit2:

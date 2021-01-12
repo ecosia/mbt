@@ -5,7 +5,7 @@
 tmp/
 repo/
 build/
-libgit2/build/
-libgit2/install/
+pkgdir/libgit2/build/
+pkgdir/libgit2/install/
 
 .idea/

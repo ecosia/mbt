@@ -3,7 +3,8 @@
 set -e
 
 DIR=$(pwd)
-LIBGIT2_PATH=$DIR/libgit2
+GIT2GO_PATH="$DIR/pkgdir/github.com/libgit2/git2go"
+LIBGIT2_PATH="$GIT2GO_PATH/vendor/libgit2"
 
 mkdir -p $LIBGIT2_PATH
 
