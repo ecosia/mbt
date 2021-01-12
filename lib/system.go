@@ -265,9 +265,10 @@ type CmdStageCallback func(mod *Module, s CmdStage, err error)
 
 // FilterOptions describe how to filter the modules in a manifest
 type FilterOptions struct {
-	Name       string
-	Fuzzy      bool
-	Dependents bool
+	Name        string
+	Fuzzy       bool
+	Dependents  bool
+	AllowCycles bool
 }
 
 // CmdOptions defines various options required by methods executing

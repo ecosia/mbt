@@ -111,7 +111,7 @@ func (m *Manifest) ApplyFilters(filterOptions *FilterOptions) (*Manifest, error)
 	if filterOptions.Dependents {
 		var err error
 
-		m.Modules, err = m.Modules.expandRequiredByDependencies()
+		m.Modules, err = m.Modules.expandRequiredByDependencies(filterOptions.AllowCycles)
 
 		if err != nil {
 			return nil, err

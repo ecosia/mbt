@@ -138,7 +138,7 @@ func (l Modules) indexByPath() map[string]*Module {
 // requiredBy dependency
 // Module dependencies are described in two forms requires and requiredBy.
 // If A needs B, then, A requires B and B is requiredBy A.
-func (l Modules) expandRequiredByDependencies() (Modules, error) {
+func (l Modules) expandRequiredByDependencies(allowCycles bool) (Modules, error) {
 	// Step 1
 	// Create the new list with all nodes
 	g := make([]interface{}, 0, len(l))
@@ -148,7 +148,7 @@ func (l Modules) expandRequiredByDependencies() (Modules, error) {
 
 	// Step 2
 	// Top sort it by requiredBy chain.
-	allItems, err := graph.TopSort(&requiredByNodeProvider{}, g...)
+	allItems, err := graph.TopSort(&requiredByNodeProvider{}, allowCycles, g...)
 	if err != nil {
 		return nil, e.Wrap(ErrClassInternal, err)
 	}
@@ -172,13 +172,13 @@ func (l Modules) expandRequiredByDependencies() (Modules, error) {
 // requires dependency
 // Module dependencies are described in two forms requires and requiredBy.
 // If A needs B, then, A requires B and B is requiredBy A.
-func (l Modules) expandRequiresDependencies() (Modules, error) {
+func (l Modules) expandRequiresDependencies(allowCycles bool) (Modules, error) {
 	g := make([]interface{}, 0, len(l))
 	for _, a := range l {
 		g = append(g, a)
 	}
 
-	items, err := graph.TopSort(&requiresNodeProvider{}, g...)
+	items, err := graph.TopSort(&requiresNodeProvider{}, allowCycles, g...)
 	if err != nil {
 		return nil, e.Wrap(ErrClassInternal, err)
 	}

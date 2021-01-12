@@ -50,7 +50,7 @@ func (b *stdManifestBuilder) ByDiff(from, to Commit) (*Manifest, error) {
 			return nil, err
 		}
 
-		mods, err = mods.expandRequiredByDependencies()
+		mods, err = mods.expandRequiredByDependencies(false)
 		if err != nil {
 			return nil, err
 		}
@@ -104,7 +104,7 @@ func (b *stdManifestBuilder) ByCommitContent(sha Commit) (*Manifest, error) {
 				return nil, err
 			}
 
-			mods, err = mods.expandRequiredByDependencies()
+			mods, err = mods.expandRequiredByDependencies(false)
 			if err != nil {
 				return nil, err
 			}
@@ -160,7 +160,7 @@ func (b *stdManifestBuilder) ByWorkspaceChanges() (*Manifest, error) {
 		return nil, err
 	}
 
-	mods, err = mods.expandRequiredByDependencies()
+	mods, err = mods.expandRequiredByDependencies(false)
 	if err != nil {
 		return nil, err
 	}

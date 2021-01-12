@@ -58,7 +58,7 @@ func (e *CycleError) Error() string {
 // TopSort performs a topological sort of the provided graph.
 // Returns an array containing the sorted graph or an
 // error if the provided graph is not a directed acyclic graph (DAG).
-func TopSort(nodeProvider NodeProvider, graph ...interface{}) ([]interface{}, error) {
+func TopSort(nodeProvider NodeProvider, allowCycles bool, graph ...interface{}) ([]interface{}, error) {
 	if nodeProvider == nil {
 		return nil, errors.New("nodeProvider should be a valid reference")
 	}
@@ -67,7 +67,7 @@ func TopSort(nodeProvider NodeProvider, graph ...interface{}) ([]interface{}, er
 	results := make([]interface{}, 0)
 
 	for _, node := range graph {
-		err := dfsVisit(nodeProvider, node, traversalState, &results, make([]interface{}, 0))
+		err := dfsVisit(nodeProvider, allowCycles, node, traversalState, &results, make([]interface{}, 0))
 		if err != nil {
 			return nil, err
 		}
@@ -76,12 +76,14 @@ func TopSort(nodeProvider NodeProvider, graph ...interface{}) ([]interface{}, er
 	return results, nil
 }
 
-func dfsVisit(nodeProvider NodeProvider, node interface{}, traversalState map[interface{}]tState, sorted *[]interface{}, path []interface{}) error {
+func dfsVisit(nodeProvider NodeProvider, allowCycles bool, node interface{}, traversalState map[interface{}]tState, sorted *[]interface{}, path []interface{}) error {
 	id := nodeProvider.ID(node)
 	if traversalState[id] == stateOpen {
-		// return &CycleError{Path: append(path, node)}
-		traversalState[id] = stateClosed
-		// return nil
+		if allowCycles {
+			traversalState[id] = stateClosed
+		} else {
+			return &CycleError{Path: append(path, node)}
+		}
 	}
 
 	if traversalState[id] == stateClosed {
@@ -96,7 +98,7 @@ func dfsVisit(nodeProvider NodeProvider, node interface{}, traversalState map[in
 		if err != nil {
 			return err
 		}
-		err = dfsVisit(nodeProvider, c, traversalState, sorted, path)
+		err = dfsVisit(nodeProvider, allowCycles, c, traversalState, sorted, path)
 		if err != nil {
 			return err
 		}
