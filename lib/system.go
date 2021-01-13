@@ -427,14 +427,18 @@ type stdSystem struct {
 	ProcessManager   ProcessManager
 }
 
+type SystemOptions struct {
+	AllowCycles bool
+}
+
 // NewSystem creates a new instance of core mbt system
-func NewSystem(path string, logLevel int) (System, error) {
+func NewSystem(path string, logLevel int, o *SystemOptions) (System, error) {
 	log := NewStdLog(logLevel)
 	repo, err := NewLibgitRepo(path, log)
 	if err != nil {
 		return nil, err
 	}
-	discover := NewDiscover(repo, log)
+	discover := NewDiscover(repo, log, &DiscoverOptions{AllowCycles: o.AllowCycles})
 	reducer := NewReducer(log)
 	mb := NewManifestBuilder(repo, reducer, discover, log)
 	wm := NewWorkspaceManager(log, repo)

@@ -28,7 +28,7 @@ func TestNewSystemForNonGitRepo(t *testing.T) {
 	clean()
 	check(t, os.MkdirAll(".tmp/repo", 0755))
 
-	repo, err := NewSystem(".tmp/repo", LogLevelNormal)
+	repo, err := NewSystem(".tmp/repo", LogLevelNormal, &SystemOptions{})
 
 	assert.EqualError(t, err, fmt.Sprintf(msgFailedOpenRepo, ".tmp/repo"))
 	assert.EqualError(t, (err.(*e.E)).InnerError(), "could not find repository from '.tmp/repo'")

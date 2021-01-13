@@ -770,7 +770,7 @@ func buildWorld(repo string, failureCallback func(error)) *World {
 
 	r := &TestRepo{Interceptor: intercept.NewInterceptor(libgitRepo)}
 
-	discover := &TestDiscover{Interceptor: intercept.NewInterceptor(NewDiscover(r, log))}
+	discover := &TestDiscover{Interceptor: intercept.NewInterceptor(NewDiscover(r, log, &DiscoverOptions{}))}
 	reducer := &TestReducer{Interceptor: intercept.NewInterceptor(NewReducer(log))}
 	mb := &TestManifestBuilder{Interceptor: intercept.NewInterceptor(NewManifestBuilder(r, reducer, discover, log))}
 	wm := &TestWorkspaceManager{Interceptor: intercept.NewInterceptor(NewWorkspaceManager(log, r))}

@@ -27,9 +27,10 @@ import (
 )
 
 var (
-	toJSON     bool
-	toGraph    bool
-	dependents bool
+	toJSON      bool
+	toGraph     bool
+	dependents  bool
+	allowCycles bool
 )
 
 func init() {

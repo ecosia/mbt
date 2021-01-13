@@ -30,7 +30,7 @@ func TestDependencyLinks(t *testing.T) {
 	c := newModuleMetadata("app-c", "c", &Spec{Name: "app-c"}, nil)
 
 	s := moduleMetadataSet{a, b, c}
-	mods, err := toModules(s)
+	mods, err := toModules(s, false)
 	check(t, err)
 	m := mods.indexByName()
 
@@ -47,7 +47,7 @@ func TestVersionCalculation(t *testing.T) {
 	b := newModuleMetadata("app-b", "b", &Spec{Name: "app-b"}, nil)
 
 	s := moduleMetadataSet{a, b}
-	mods, err := toModules(s)
+	mods, err := toModules(s, false)
 	check(t, err)
 	m := mods.indexByName()
 
@@ -126,7 +126,7 @@ func TestMissingDependencies(t *testing.T) {
 		},
 	}}
 
-	mods, err := toModules(s)
+	mods, err := toModules(s, false)
 
 	assert.Nil(t, mods)
 	assert.EqualError(t, err, "dependency not found app-a -> app-b")
@@ -147,7 +147,7 @@ func TestModuleNameConflicts(t *testing.T) {
 		},
 	}
 
-	mods, err := toModules(s)
+	mods, err := toModules(s, false)
 
 	assert.Nil(t, mods)
 	assert.EqualError(t, err, "Module name 'app-a' in directory 'app-b' conflicts with the module in 'app-a' directory")

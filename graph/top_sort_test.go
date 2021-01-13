@@ -57,7 +57,7 @@ func newNode(name string) *node {
 func TestNoDependency(t *testing.T) {
 	n := newNode("a")
 
-	s, _ := TopSort(&testNodeProvider{}, n)
+	s, _ := TopSort(&testNodeProvider{}, false, n)
 
 	assert.Equal(t, 1, len(s))
 	assert.Equal(t, n, s[0])
@@ -68,7 +68,7 @@ func TestSingleDependency(t *testing.T) {
 	b := newNode("b")
 	a.children = []*node{b}
 
-	s, _ := TopSort(&testNodeProvider{}, a, b)
+	s, _ := TopSort(&testNodeProvider{}, false, a, b)
 
 	assert.Equal(t, 2, len(s))
 	assert.Equal(t, b, s[0])
@@ -85,7 +85,7 @@ func TestDiamondDependency(t *testing.T) {
 	c.children = []*node{d}
 	a.children = []*node{b, c}
 
-	s, _ := TopSort(&testNodeProvider{}, a, b, c, d)
+	s, _ := TopSort(&testNodeProvider{}, false, a, b, c, d)
 
 	assert.Equal(t, 4, len(s))
 	assert.Equal(t, d, s[0])
@@ -98,7 +98,7 @@ func TestDirectCircularDependency(t *testing.T) {
 	a := newNode("a")
 	a.children = []*node{a}
 
-	s, err := TopSort(&testNodeProvider{}, a)
+	s, err := TopSort(&testNodeProvider{}, false, a)
 	cErr := err.(*CycleError)
 
 	assert.EqualError(t, cErr, "not a dag")
@@ -113,7 +113,7 @@ func TestIndirectCircularDependency(t *testing.T) {
 	b.children = []*node{a}
 	a.children = []*node{b}
 
-	s, err := TopSort(&testNodeProvider{}, a, b)
+	s, err := TopSort(&testNodeProvider{}, false, a, b)
 	cErr := err.(*CycleError)
 
 	assert.EqualError(t, cErr, "not a dag")
@@ -130,7 +130,7 @@ func TestIndirectCircularDependencyForDuplicatedRoots(t *testing.T) {
 	b.children = []*node{a}
 	a.children = []*node{b}
 
-	s, err := TopSort(&testNodeProvider{}, a, b, a, b)
+	s, err := TopSort(&testNodeProvider{}, false, a, b, a, b)
 	cErr := err.(*CycleError)
 
 	assert.EqualError(t, cErr, "not a dag")
@@ -148,7 +148,7 @@ func TestCommonLinksFromDisjointNodes(t *testing.T) {
 	a.children = []*node{c}
 	b.children = []*node{c}
 
-	s, _ := TopSort(&testNodeProvider{}, a, b)
+	s, _ := TopSort(&testNodeProvider{}, false, a, b)
 
 	assert.Equal(t, 3, len(s))
 	assert.Equal(t, c, s[0])
@@ -160,19 +160,19 @@ func TestIdentity(t *testing.T) {
 	a1 := newNode("a")
 	a2 := newNode("a")
 
-	s, _ := TopSort(&testNodeProvider{}, a1, a2)
+	s, _ := TopSort(&testNodeProvider{}, false, a1, a2)
 
 	assert.Equal(t, 1, len(s))
 	assert.Equal(t, a1, s[0])
 }
 
 func TestNilInput(t *testing.T) {
-	_, err := TopSort(nil)
+	_, err := TopSort(nil, false)
 	assert.EqualError(t, err, "nodeProvider should be a valid reference")
 }
 
 func TestEmptyInput(t *testing.T) {
-	s, err := TopSort(&testNodeProvider{})
+	s, err := TopSort(&testNodeProvider{}, false)
 	assert.NoError(t, err)
 	assert.Len(t, s, 0)
 }
@@ -181,7 +181,7 @@ func TestGetChildrenError(t *testing.T) {
 	a := newNode("a")
 	b := newNode("b")
 	a.children = []*node{b}
-	_, err := TopSort(&testNodeProvider{childError: errors.New("foo")}, a)
+	_, err := TopSort(&testNodeProvider{childError: errors.New("foo")}, false, a)
 	assert.EqualError(t, err, "foo")
 }
 
@@ -210,7 +210,7 @@ func TestComplexGraph(t *testing.T) {
 	f.children = []*node{c}
 	g.children = []*node{f}
 
-	s, err := TopSort(&testNodeProvider{}, a)
+	s, err := TopSort(&testNodeProvider{}, false, a)
 
 	assert.Nil(t, err)
 	assert.Equal(t, 7, len(s))
@@ -249,7 +249,7 @@ func TestComplexCycle(t *testing.T) {
 	g.children = []*node{f}
 	e.children = []*node{f}
 
-	s, err := TopSort(&testNodeProvider{}, a)
+	s, err := TopSort(&testNodeProvider{}, false, a)
 	cErr := err.(*CycleError)
 
 	assert.Nil(t, s)

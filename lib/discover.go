@@ -41,15 +41,20 @@ type moduleMetadata struct {
 type moduleMetadataSet []*moduleMetadata
 
 type stdDiscover struct {
-	Repo Repo
-	Log  Log
+	Repo    Repo
+	Log     Log
+	Options *DiscoverOptions
+}
+
+type DiscoverOptions struct {
+	AllowCycles bool
 }
 
 const configFileName = ".mbt.yml"
 
 // NewDiscover creates an instance of standard discover implementation.
-func NewDiscover(repo Repo, l Log) Discover {
-	return &stdDiscover{Repo: repo, Log: l}
+func NewDiscover(repo Repo, l Log, o *DiscoverOptions) Discover {
+	return &stdDiscover{Repo: repo, Log: l, Options: o}
 }
 
 func (d *stdDiscover) ModulesInCommit(commit Commit) (Modules, error) {
@@ -104,7 +109,7 @@ func (d *stdDiscover) ModulesInCommit(commit Commit) (Modules, error) {
 		return nil, err
 	}
 
-	return toModules(metadataSet)
+	return toModules(metadataSet, d.Options.AllowCycles)
 }
 
 func (d *stdDiscover) ModulesInWorkspace() (Modules, error) {
@@ -155,7 +160,7 @@ func (d *stdDiscover) ModulesInWorkspace() (Modules, error) {
 		return nil, e.Wrap(ErrClassInternal, err)
 	}
 
-	return toModules(metadataSet)
+	return toModules(metadataSet, d.Options.AllowCycles)
 }
 
 func newModuleMetadata(dir string, hash string, spec *Spec, dependentFileHashes map[string]string) *moduleMetadata {
@@ -201,7 +206,7 @@ func newSpec(content []byte) (*Spec, error) {
 
 // toModules transforms an moduleMetadataSet to Modules structure
 // while establishing the dependency links.
-func toModules(a moduleMetadataSet) (Modules, error) {
+func toModules(a moduleMetadataSet, allowCycles bool) (Modules, error) {
 	// Step 1
 	// Index moduleMetadata by the module name and use it to
 	// create a ModuleMetadataProvider that we can use with TopSort fn.
@@ -218,7 +223,7 @@ func toModules(a moduleMetadataSet) (Modules, error) {
 
 	// Step 2
 	// Topological sort
-	sortedNodes, err := graph.TopSort(provider, true, nodes...) // TODO: pass allowCycles here too
+	sortedNodes, err := graph.TopSort(provider, allowCycles, nodes...)
 	if err != nil {
 		if cycleErr, ok := err.(*graph.CycleError); ok {
 			var pathStr string

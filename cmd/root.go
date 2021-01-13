@@ -26,23 +26,22 @@ import (
 
 // Flags available to all commands.
 var (
-	in          string
-	src         string
-	dst         string
-	from        string
-	to          string
-	first       string
-	second      string
-	kind        string
-	name        string
-	command     string
-	all         bool
-	debug       bool
-	content     bool
-	fuzzy       bool
-	failFast    bool
-	allowCycles bool
-	system      lib.System
+	in       string
+	src      string
+	dst      string
+	from     string
+	to       string
+	first    string
+	second   string
+	kind     string
+	name     string
+	command  string
+	all      bool
+	debug    bool
+	content  bool
+	fuzzy    bool
+	failFast bool
+	system   lib.System
 )
 
 func init() {
@@ -87,7 +86,7 @@ var RootCmd = &cobra.Command{
 		}
 
 		var err error
-		system, err = lib.NewSystem(in, level)
+		system, err = lib.NewSystem(in, level, &lib.SystemOptions{AllowCycles: allowCycles})
 		return err
 	},
 }
