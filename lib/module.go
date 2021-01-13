@@ -138,7 +138,7 @@ func (l Modules) indexByPath() map[string]*Module {
 // requiredBy dependency
 // Module dependencies are described in two forms requires and requiredBy.
 // If A needs B, then, A requires B and B is requiredBy A.
-func (l Modules) expandRequiredByDependencies(allowCycles bool) (Modules, error) {
+func (l Modules) expandRequiredByDependenciesWithCycles(allowCycles bool) (Modules, error) {
 	// Step 1
 	// Create the new list with all nodes
 	g := make([]interface{}, 0, len(l))
@@ -164,6 +164,17 @@ func (l Modules) expandRequiredByDependencies(allowCycles bool) (Modules, error)
 	}
 
 	return r, nil
+}
+
+// expandRequiredByDependencies takes a list of Modules and
+// returns a new list of Modules including the ones in their
+// requiredBy (see below) dependency chain.
+// requiredBy dependency
+// Module dependencies are described in two forms requires and requiredBy.
+// If A needs B, then, A requires B and B is requiredBy A.
+// This function just wraps expandRequiredByDependenciesWithCycles
+func (l Modules) expandRequiredByDependencies() (Modules, error) {
+	return l.expandRequiredByDependenciesWithCycles(false)
 }
 
 // expandRequiresDependencies takes a list of Modules and
