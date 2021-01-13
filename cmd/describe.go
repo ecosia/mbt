@@ -35,7 +35,7 @@ var (
 func init() {
 	describePrCmd.Flags().StringVar(&src, "src", "", "Source branch")
 	describePrCmd.Flags().StringVar(&dst, "dst", "", "Destination branch")
-	describePrCmd.Flags().BoolVarP(&allowCycles, "allow-cycles", "a", false, "Allow cyclic dependencies")
+	describePrCmd.Flags().BoolVarP(&allowCycles, "allowCycles", "a", false, "Allow cyclic dependencies")
 
 	describeIntersectionCmd.Flags().StringVar(&kind, "kind", "", "Kind of input for first and second args (available options are 'branch' and 'commit')")
 	describeIntersectionCmd.Flags().StringVar(&first, "first", "", "First item")

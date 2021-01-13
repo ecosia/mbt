@@ -68,7 +68,7 @@ func (s *stdSystem) intersectionCore(first, second Commit) (Modules, error) {
 		return nil, err
 	}
 
-	firstSetWithDeps, err := firstSet.expandRequiresDependencies()
+	firstSetWithDeps, err := firstSet.expandRequiresDependencies(false)
 	if err != nil {
 		return nil, err
 	}
@@ -87,7 +87,7 @@ func (s *stdSystem) intersectionCore(first, second Commit) (Modules, error) {
 		return nil, err
 	}
 
-	secondSetWithDeps, err := secondSet.expandRequiresDependencies()
+	secondSetWithDeps, err := secondSet.expandRequiresDependencies(false)
 	if err != nil {
 		return nil, err
 	}
