@@ -218,7 +218,7 @@ func toModules(a moduleMetadataSet) (Modules, error) {
 
 	// Step 2
 	// Topological sort
-	sortedNodes, err := graph.TopSort(provider, false, nodes...)
+	sortedNodes, err := graph.TopSort(provider, true, nodes...) // TODO: pass allowCycles here too
 	if err != nil {
 		if cycleErr, ok := err.(*graph.CycleError); ok {
 			var pathStr string
