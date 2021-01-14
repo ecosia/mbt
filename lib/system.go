@@ -142,6 +142,7 @@ type Spec struct {
 	Properties       map[string]interface{} `yaml:"properties"`
 	Dependencies     []string               `yaml:"dependencies"`
 	FileDependencies []string               `yaml:"fileDependencies"`
+	PeerDependencies []string               `yaml:"peerDependencies"`
 }
 
 // Module represents a single module in the repository.

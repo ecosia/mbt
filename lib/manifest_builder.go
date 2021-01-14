@@ -33,6 +33,29 @@ type stdManifestBuilder struct {
 
 type manifestBuilder func() (*Manifest, error)
 
+func peerDependencies(reduced, allModules []*Module) []*Module {
+	peerDeps := map[*Module]bool{}
+	for _, reducedModule := range reduced {
+		if len(reducedModule.metadata.spec.PeerDependencies) == 0 {
+			continue
+		}
+		for _, peer := range reducedModule.metadata.spec.PeerDependencies {
+			for _, module := range allModules {
+				if peer == module.Name() {
+					peerDeps[module] = true
+				}
+			}
+		}
+	}
+
+	peers := []*Module{}
+	for dep := range peerDeps {
+		peers = append(peers, dep)
+	}
+
+	return peers
+}
+
 func (b *stdManifestBuilder) ByDiff(from, to Commit) (*Manifest, error) {
 	return b.runManifestBuilder(func() (*Manifest, error) {
 		mods, err := b.Discover.ModulesInCommit(to)
@@ -45,17 +68,32 @@ func (b *stdManifestBuilder) ByDiff(from, to Commit) (*Manifest, error) {
 			return nil, err
 		}
 
-		mods, err = b.Reducer.Reduce(mods, deltas)
+		reduced, err := b.Reducer.Reduce(mods, deltas)
 		if err != nil {
 			return nil, err
 		}
 
-		mods, err = mods.expandRequiredByDependencies()
+		reduced, err = reduced.expandRequiredByDependencies()
 		if err != nil {
 			return nil, err
 		}
 
-		return b.buildManifest(mods, to.ID())
+		peerDeps := peerDependencies(reduced, mods)
+		for _, dep := range peerDeps {
+			exists := false
+			for _, existing := range reduced {
+				if dep == existing {
+					exists = true
+					break
+				}
+			}
+			if exists {
+				continue
+			}
+			reduced = append(reduced, dep)
+		}
+
+		return b.buildManifest(reduced, to.ID())
 	})
 }
 
